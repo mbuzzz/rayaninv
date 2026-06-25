@@ -24,8 +24,8 @@
     <form action="{{ route('login') }}" method="POST" style="width: 100%; display: flex; flex-direction: column; gap: 1.2rem;">
         @csrf
         <div class="info-group" style="width: 100%;">
-            <label style="font-size: 0.75rem; font-weight: 700; color: var(--primary-color);">EMAIL ADDRESS</label>
-            <input type="email" name="email" class="info-input" placeholder="admin@example.com" value="{{ old('email') }}" required autofocus>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--primary-color);">USERNAME</label>
+            <input type="text" name="username" class="info-input" placeholder="Enter username" value="{{ old('username') }}" required autofocus>
         </div>
 
         <div class="info-group" style="width: 100%;">
