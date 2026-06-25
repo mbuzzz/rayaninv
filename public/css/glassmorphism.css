@@ -361,8 +361,8 @@ body.export-mode .glass-container, body.preview-mode .glass-container {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border: none !important;
-    width: 800px; /* Fixed width for better export */
-    padding: 40px !important;
+    width: 580px; /* A5 width at web scale */
+    padding: 25px !important;
 }
 body.preview-mode .glass-container {
     box-shadow: 0 10px 30px rgba(0,0,0,0.4) !important;
@@ -400,10 +400,12 @@ body.export-mode .invoice-table th,
 body.preview-mode .invoice-table th {
     background: #f1f5f9 !important;
     color: black !important;
+    padding: 0.6rem !important;
 }
 body.export-mode td,
 body.preview-mode td {
     border-bottom: 1px solid #e2e8f0 !important;
+    padding: 0.6rem 0.4rem !important;
 }
 body.export-mode .summary-row,
 body.export-mode .company-info p,
@@ -416,6 +418,15 @@ body.preview-mode .company-info h1,
 body.preview-mode .invoice-title h2,
 body.preview-mode .table-input {
     color: black !important;
+}
+
+/* Signature block display in preview and export */
+.signature-block {
+    display: none;
+}
+body.preview-mode .signature-block,
+body.export-mode .signature-block {
+    display: block !important;
 }
 
 /* Floating Preview Actions */
@@ -443,6 +454,10 @@ body.preview-mode .glass-container {
 }
 
 @media print {
+    @page {
+        size: A5 portrait;
+        margin: 8mm;
+    }
     body { background: white !important; padding: 0; }
     body::before, body::after { display: none; }
     .glass-container {
@@ -452,6 +467,7 @@ body.preview-mode .glass-container {
         background: white !important;
         margin: 0 !important;
         padding: 0 !important;
+        width: 100% !important;
     }
     .btn-add, .col-action, .actions, .preview-actions, body.preview-mode .preview-actions { display: none !important; }
     .table-input, .info-input {
@@ -469,6 +485,14 @@ body.preview-mode .glass-container {
     input[type="date"]::-webkit-calendar-picker-indicator {
         display: none !important;
         -webkit-appearance: none !important;
+    }
+    .signature-block {
+        display: block !important;
+    }
+    .watermark {
+        width: 180px !important;
+        height: 180px !important;
+        opacity: 0.04 !important;
     }
 }
 

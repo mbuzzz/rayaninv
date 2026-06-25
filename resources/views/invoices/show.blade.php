@@ -34,9 +34,9 @@
             </div>
         </div>
         <div class="invoice-title" style="text-align: right;">
-            <h2 style="font-size: 2.5rem; font-weight: 800; letter-spacing: 2px; color: black !important; margin-bottom: 0.5rem;">NOTA</h2>
+            <h2 style="font-size: 2.5rem; font-weight: 800; letter-spacing: 2px; color: black !important; margin-bottom: 0.5rem;">INVOICE</h2>
             <div style="font-size: 1.1rem; font-weight: 700; color: black !important;">
-                NO: {{ $invoice->invoice_number }}
+                INVOICE NO: {{ $invoice->invoice_number }}
             </div>
         </div>
     </div>
@@ -44,14 +44,14 @@
     <div class="customer-info" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid #e2e8f0;">
         <!-- Left Column: Customer details -->
         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-            <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: #475569;">DIBERIKAN KEPADA:</label>
+            <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: #475569;">BILLED TO:</label>
             <div style="font-size: 1.2rem; font-weight: 700; color: black !important; text-transform: uppercase;">{{ $invoice->customer_name }}</div>
         </div>
         
         <!-- Right Column: Invoice metadata -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start;">
             <div style="display: flex; flex-direction: column; gap: 0.3rem;">
-                <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: #475569;">TANGGAL:</label>
+                <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: #475569;">DATE:</label>
                 <div style="font-size: 1rem; color: black !important; font-weight: 500;">{{ \Carbon\Carbon::parse($invoice->date)->format('d M Y') }}</div>
             </div>
             
@@ -59,9 +59,9 @@
                 <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: #475569;">STATUS:</label>
                 <div>
                     @if($invoice->status == 'Lunas')
-                        <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; display: inline-block;">Lunas</span>
+                        <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; display: inline-block;">Paid</span>
                     @else
-                        <span style="background: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; display: inline-block;">Belum Lunas</span>
+                        <span style="background: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; display: inline-block;">Unpaid</span>
                     @endif
                 </div>
             </div>
@@ -71,10 +71,10 @@
     <table class="invoice-table">
         <thead>
             <tr>
-                <th class="col-desc" style="background: #f1f5f9 !important; color: black !important;">Deskripsi Barang / Jasa</th>
-                <th class="col-qty" style="background: #f1f5f9 !important; color: black !important; text-align: center;">Jumlah</th>
-                <th class="col-price" style="background: #f1f5f9 !important; color: black !important;">Harga Satuan</th>
-                <th class="col-total" style="background: #f1f5f9 !important; color: black !important; text-align: right; padding-right: 1rem !important;">Total Harga</th>
+                <th class="col-desc" style="background: #f1f5f9 !important; color: black !important;">Description of Goods / Services</th>
+                <th class="col-qty" style="background: #f1f5f9 !important; color: black !important; text-align: center;">Qty</th>
+                <th class="col-price" style="background: #f1f5f9 !important; color: black !important;">Unit Price</th>
+                <th class="col-total" style="background: #f1f5f9 !important; color: black !important; text-align: right; padding-right: 1rem !important;">Total Price</th>
             </tr>
         </thead>
         <tbody>
@@ -97,35 +97,42 @@
                     <canvas id="invoice-qr" style="width: 90px; height: 90px; display: block;"></canvas>
                 </div>
                 <div style="font-size: 0.8rem; color: black !important; max-width: 180px; line-height: 1.4;">
-                    <span style="font-weight: 600;" class="qr-title">Validasi Online</span><br>
-                    Scan QR ini untuk memverifikasi keaslian nota secara online.
+                    <span style="font-weight: 600;" class="qr-title">Online Validation</span><br>
+                    Scan this QR to verify invoice authenticity online.
                 </div>
             </div>
 
             <!-- Payment Info (shown if payment is pending) -->
             @if($invoice->status !== 'Lunas')
             <div style="margin-top: 0.5rem; padding: 0.75rem 1rem; border-radius: 8px; background: #fffbeb; border: 1px solid #fef3c7; color: #92400e; font-size: 0.8rem; line-height: 1.5; max-width: 320px;">
-                <strong>Informasi Pembayaran:</strong><br>
-                Transfer ke rekening resmi perusahaan:<br>
+                <strong>Payment Information:</strong><br>
+                Transfer to the official company account:<br>
                 <strong>Bank Mandiri:</strong> 1430028062501<br>
-                <strong>A.N.:</strong> PT Rayan Smart Kreatif<br>
-                <em>Konfirmasikan bukti transfer ke admin via WA.</em>
+                <strong>Beneficiary:</strong> PT Rayan Smart Kreatif<br>
+                <em>Confirm your payment with transfer slip to admin via WA.</em>
             </div>
             @endif
         </div>
 
-        <div class="summary-content" style="margin-top: 0;">
-            <div class="summary-row" style="color: black !important;">
-                <span>Subtotal</span>
-                <span>Rp {{ number_format($invoice->subtotal, 0, ',', '.') }}</span>
+        <div class="summary-content" style="margin-top: 0; display: flex; flex-direction: column; gap: 1rem; align-items: flex-end;">
+            <div style="width: 100%;">
+                <div class="summary-row" style="color: black !important;">
+                    <span>Subtotal</span>
+                    <span>Rp {{ number_format($invoice->subtotal, 0, ',', '.') }}</span>
+                </div>
+                <div class="summary-row" style="color: black !important;">
+                    <span>Tax ({{ $invoice->tax_rate }}%)</span>
+                    <span>Rp {{ number_format($invoice->tax, 0, ',', '.') }}</span>
+                </div>
+                <div class="summary-row grand-total" style="color: black !important; border-top: 2px solid #e2e8f0 !important;">
+                    <span>Total Due</span>
+                    <span>Rp {{ number_format($invoice->total, 0, ',', '.') }}</span>
+                </div>
             </div>
-            <div class="summary-row" style="color: black !important;">
-                <span>Pajak ({{ $invoice->tax_rate }}%)</span>
-                <span>Rp {{ number_format($invoice->tax, 0, ',', '.') }}</span>
-            </div>
-            <div class="summary-row grand-total" style="color: black !important; border-top: 2px solid #e2e8f0 !important;">
-                <span>Total Tagihan</span>
-                <span>Rp {{ number_format($invoice->total, 0, ',', '.') }}</span>
+            <!-- Signature Block -->
+            <div class="signature-block" style="text-align: center; width: 200px; margin-top: 1.5rem;">
+                <p style="font-size: 0.8rem; color: black !important; margin-bottom: 2.5rem; font-weight: 500;">Authorized Signature,</p>
+                <p style="font-size: 0.85rem; font-weight: 700; color: black !important; border-top: 1px dashed #000; padding-top: 0.3rem;">PT Rayan Smart Kreatif</p>
             </div>
         </div>
     </div>
@@ -165,12 +172,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const canvas = await html2canvas(element, { scale: 2, useCORS: true });
             const imgData = canvas.toDataURL('image/png');
             
-            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+            const pdf = new jspdf.jsPDF('p', 'mm', 'a5');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('Nota-' + '{{ $invoice->invoice_number }}' + '.pdf');
+            pdf.save('Invoice-' + '{{ $invoice->invoice_number }}' + '.pdf');
             
             element.style.marginTop = '60px';
             document.body.classList.remove('export-mode');
@@ -189,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const canvas = await html2canvas(element, { scale: 2, useCORS: true });
             
             const link = document.createElement('a');
-            link.download = 'Nota-' + '{{ $invoice->invoice_number }}' + '.jpg';
+            link.download = 'Invoice-' + '{{ $invoice->invoice_number }}' + '.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.9);
             link.click();
             

@@ -45,35 +45,46 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Add new row
-    btnAdd.addEventListener('click', () => {
-        const rowCount = document.querySelectorAll('.item-row').length;
-        const tr = document.createElement('tr');
-        tr.className = 'item-row';
-        tr.innerHTML = `
-            <td><input type="text" name="items[${rowCount}][description]" class="table-input input-desc" placeholder="Nama Barang / Jasa" required></td>
-            <td class="col-qty"><input type="number" name="items[${rowCount}][quantity]" class="table-input input-qty" value="1" min="1" required></td>
-            <td><input type="number" name="items[${rowCount}][price]" class="table-input input-price" placeholder="Harga Satuan" required></td>
-            <td class="col-total item-total">Rp 0</td>
-            <td class="col-action">
-                <button type="button" class="btn-remove" title="Hapus Baris">×</button>
-            </td>
-        `;
-        tableBody.appendChild(tr);
+    if (btnAdd) {
+        btnAdd.addEventListener('click', () => {
+            const rowCount = document.querySelectorAll('.item-row').length;
+            const tr = document.createElement('tr');
+            tr.className = 'item-row';
+            tr.innerHTML = `
+                <td>
+                    <input type="text" name="items[${rowCount}][description]" class="table-input input-desc" placeholder="Description of Service / Product" required>
+                    <span class="view-only" style="color: black !important; font-weight: 500; text-align: left;"></span>
+                </td>
+                <td class="col-qty">
+                    <input type="number" name="items[${rowCount}][quantity]" class="table-input input-qty" value="1" min="1" required>
+                    <span class="view-only" style="color: black !important; display: block; text-align: center;"></span>
+                </td>
+                <td>
+                    <input type="number" name="items[${rowCount}][price]" class="table-input input-price" placeholder="Unit Price" required>
+                    <span class="view-only" style="color: black !important;"></span>
+                </td>
+                <td class="col-total item-total">Rp 0</td>
+                <td class="col-action">
+                    <button type="button" class="btn-remove" title="Remove Row">×</button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
 
-        // Attach event listeners to new inputs
-        const inputs = tr.querySelectorAll('input');
-        inputs.forEach(input => {
-            input.addEventListener('input', calculateTotals);
+            // Attach event listeners to new inputs
+            const inputs = tr.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculateTotals);
+            });
+
+            // Attach event listener to new remove button
+            tr.querySelector('.btn-remove').addEventListener('click', function() {
+                tr.remove();
+                calculateTotals();
+            });
         });
+    }
 
-        // Attach event listener to new remove button
-        tr.querySelector('.btn-remove').addEventListener('click', function() {
-            tr.remove();
-            calculateTotals();
-        });
-    });
-
-    // Attach event listener to existing first row
+    // Attach event listener to existing first row inputs
     document.querySelectorAll('.item-row input').forEach(input => {
         input.addEventListener('input', calculateTotals);
     });
@@ -83,25 +94,51 @@ document.addEventListener('DOMContentLoaded', function() {
         taxRateInput.addEventListener('input', calculateTotals);
     }
     
-    document.querySelector('.btn-remove').addEventListener('click', function(e) {
-        if(document.querySelectorAll('.item-row').length > 1) {
-            e.target.closest('tr').remove();
-            calculateTotals();
-        } else {
-            alert('Minimal harus ada 1 barang/jasa.');
-        }
-    });
+    const firstRemoveBtn = document.querySelector('.btn-remove');
+    if (firstRemoveBtn) {
+        firstRemoveBtn.addEventListener('click', function(e) {
+            if(document.querySelectorAll('.item-row').length > 1) {
+                e.target.closest('tr').remove();
+                calculateTotals();
+            } else {
+                alert('At least 1 item is required.');
+            }
+        });
+    }
 
     // Initial calculation
     calculateTotals();
 
-    // Prepare for Preview/Export
+    // Prepare for Preview/Export by copying input values to view-only spans
     function syncInputsForView() {
-        document.querySelectorAll('input, select').forEach(el => {
-            if(el.tagName === 'SELECT') {
-                el.setAttribute('data-value', el.options[el.selectedIndex].text);
-            } else {
-                el.setAttribute('value', el.value);
+        // Handle normal inputs
+        document.querySelectorAll('.info-input, .table-input').forEach(el => {
+            const viewSpan = el.parentElement.querySelector('.view-only');
+            if (viewSpan) {
+                if (el.tagName === 'SELECT') {
+                    const isPaid = el.value === 'Lunas';
+                    viewSpan.innerHTML = isPaid 
+                        ? '<span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700;">Paid</span>'
+                        : '<span style="background: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700;">Unpaid</span>';
+                } else if (el.name === 'tax_rate') {
+                    viewSpan.textContent = el.value + '%';
+                } else if (el.classList.contains('input-price')) {
+                    viewSpan.textContent = formatCurrency(parseFloat(el.value) || 0);
+                } else if (el.name === 'date') {
+                    if (el.value) {
+                        const dateObj = new Date(el.value);
+                        if (!isNaN(dateObj.getTime())) {
+                            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+                            viewSpan.textContent = dateObj.toLocaleDateString('en-US', options);
+                        } else {
+                            viewSpan.textContent = el.value;
+                        }
+                    } else {
+                        viewSpan.textContent = '-';
+                    }
+                } else {
+                    viewSpan.textContent = el.value;
+                }
             }
         });
     }
@@ -139,12 +176,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const canvas = await html2canvas(element, { scale: 2, useCORS: true });
             const imgData = canvas.toDataURL('image/png');
             
-            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+            const pdf = new jspdf.jsPDF('p', 'mm', 'a5');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('Nota-' + (document.querySelector('input[name="invoice_number"]').value || 'Export') + '.pdf');
+            
+            const invNumberEl = document.querySelector('input[name="invoice_number"]');
+            const invNumber = invNumberEl ? invNumberEl.value : 'Export';
+            pdf.save('Invoice-' + invNumber + '.pdf');
             
             document.body.classList.remove('export-mode');
             document.body.classList.add('preview-mode');
@@ -161,8 +201,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const element = document.getElementById('invoice-container');
             const canvas = await html2canvas(element, { scale: 2, useCORS: true });
             
+            const invNumberEl = document.querySelector('input[name="invoice_number"]');
+            const invNumber = invNumberEl ? invNumberEl.value : 'Export';
+            
             const link = document.createElement('a');
-            link.download = 'Nota-' + (document.querySelector('input[name="invoice_number"]').value || 'Export') + '.jpg';
+            link.download = 'Invoice-' + invNumber + '.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.9);
             link.click();
             
