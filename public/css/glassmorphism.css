@@ -469,7 +469,8 @@ body.preview-mode .glass-container {
         padding: 0 !important;
         width: 100% !important;
     }
-    .btn-add, .col-action, .actions, .preview-actions, body.preview-mode .preview-actions { display: none !important; }
+    .btn-add, .col-action, .actions, .preview-actions, body.preview-mode .preview-actions, .admin-nav { display: none !important; }
+    .content-wrapper { margin-top: 0 !important; }
     .table-input, .info-input {
         border: none !important;
         background: transparent !important;

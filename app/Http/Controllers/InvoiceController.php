@@ -5,13 +5,133 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class InvoiceController extends Controller
 {
     public function index()
     {
         $invoices = Invoice::orderBy('created_at', 'desc')->get();
-        return view('invoices.index', compact('invoices'));
+        
+        // Compute statistics
+        $totalInvoices = $invoices->count();
+        $totalRevenue = $invoices->sum('total');
+        $totalPaid = $invoices->where('status', 'Lunas')->sum('total');
+        $totalUnpaid = $invoices->where('status', 'Belum Lunas')->sum('total');
+        
+        return view('invoices.index', compact(
+            'invoices', 
+            'totalInvoices', 
+            'totalRevenue', 
+            'totalPaid', 
+            'totalUnpaid'
+        ));
+    }
+
+    public function exportExcel()
+    {
+        $invoices = Invoice::orderBy('created_at', 'desc')->get();
+        
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Invoice History');
+        
+        // Set Header Style
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+                'size' => 11,
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '1E293B'], // Dark slate
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '475569'],
+                ],
+            ],
+        ];
+
+        // Column Headers
+        $headers = [
+            'Invoice Number', 
+            'Date', 
+            'Customer Name', 
+            'Subtotal (IDR)', 
+            'Tax Rate', 
+            'Tax Amount (IDR)', 
+            'Total Amount (IDR)', 
+            'Status'
+        ];
+        
+        foreach ($headers as $colIndex => $header) {
+            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 1);
+            $sheet->setCellValue($colLetter . '1', $header);
+            $sheet->getColumnDimension($colLetter)->setAutoSize(true);
+        }
+        
+        $sheet->getStyle('A1:H1')->applyFromArray($headerStyle);
+        $sheet->getRowDimension(1)->setRowHeight(25);
+        
+        // Populate Data
+        $rowNum = 2;
+        foreach ($invoices as $inv) {
+            $sheet->setCellValue('A' . $rowNum, $inv->invoice_number);
+            $sheet->setCellValue('B' . $rowNum, $inv->date);
+            $sheet->setCellValue('C' . $rowNum, $inv->customer_name);
+            $sheet->setCellValue('D' . $rowNum, $inv->subtotal);
+            $sheet->setCellValue('E' . $rowNum, ($inv->tax_rate / 100)); // Will format as %
+            $sheet->setCellValue('F' . $rowNum, $inv->tax);
+            $sheet->setCellValue('G' . $rowNum, $inv->total);
+            $sheet->setCellValue('H' . $rowNum, $inv->status);
+            
+            // Format cells
+            $sheet->getStyle('B' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('D' . $rowNum)->getNumberFormat()->setFormatCode('Rp#,##0');
+            $sheet->getStyle('E' . $rowNum)->getNumberFormat()->setFormatCode('0.0%');
+            $sheet->getStyle('F' . $rowNum)->getNumberFormat()->setFormatCode('Rp#,##0');
+            $sheet->getStyle('G' . $rowNum)->getNumberFormat()->setFormatCode('Rp#,##0');
+            $sheet->getStyle('H' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            
+            // Highlight status
+            $statusStyle = [
+                'font' => [
+                    'bold' => true,
+                ]
+            ];
+            if ($inv->status === 'Lunas') {
+                $statusStyle['font']['color'] = ['rgb' => '15803D']; // green
+            } else {
+                $statusStyle['font']['color'] = ['rgb' => 'B91C1C']; // red
+            }
+            $sheet->getStyle('H' . $rowNum)->applyFromArray($statusStyle);
+            
+            // Thin borders for data rows
+            $sheet->getStyle('A' . $rowNum . ':H' . $rowNum)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('E2E8F0'));
+            
+            $rowNum++;
+        }
+        
+        $fileName = 'invoice_history_' . date('Ymd_His') . '.xlsx';
+        $writer = new Xlsx($spreadsheet);
+        
+        return response()->streamDownload(function() use ($writer) {
+            $writer->save('php://output');
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'max-age=0',
+        ]);
     }
 
     public function create()
