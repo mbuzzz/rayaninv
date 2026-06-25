@@ -33,33 +33,37 @@
                    Website: www.rayan.web.id</p>
             </div>
         </div>
-        <div class="invoice-title">
-            <h2 style="color: black !important;">NOTA</h2>
-            <div style="font-size: 1rem; color: black !important; margin-top: 0.5rem; font-weight: 500;">
-                No: {{ $invoice->invoice_number }}
+        <div class="invoice-title" style="text-align: right;">
+            <h2 style="font-size: 2.5rem; font-weight: 800; letter-spacing: 2px; color: black !important; margin-bottom: 0.5rem;">NOTA</h2>
+            <div style="font-size: 1.1rem; font-weight: 700; color: black !important;">
+                NO: {{ $invoice->invoice_number }}
             </div>
         </div>
     </div>
 
-    <div class="customer-info" style="margin-bottom: 2rem;">
-        <div class="info-group">
-            <label style="color: black !important;">Diberikan Kepada:</label>
-            <div style="padding-top: 5px; font-size: 1.1rem; font-weight: 600; color: black !important;">{{ $invoice->customer_name }}</div>
+    <div class="customer-info" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid #e2e8f0;">
+        <!-- Left Column: Customer details -->
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: #475569;">DIBERIKAN KEPADA:</label>
+            <div style="font-size: 1.2rem; font-weight: 700; color: black !important; text-transform: uppercase;">{{ $invoice->customer_name }}</div>
         </div>
         
-        <div class="info-group" style="align-items: flex-end;">
-            <label style="color: black !important;">Tanggal:</label>
-            <div style="padding-top: 5px; color: black !important;">{{ \Carbon\Carbon::parse($invoice->date)->format('d M Y') }}</div>
-        </div>
-        
-        <div class="info-group" style="align-items: flex-end;">
-            <label style="color: black !important;">Status Pembayaran:</label>
-            <div style="padding-top: 5px;">
-                @if($invoice->status == 'Lunas')
-                    <span style="background: rgba(74, 222, 128, 0.2); color: #166534; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600;">Lunas</span>
-                @else
-                    <span style="background: rgba(239, 68, 68, 0.2); color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600;">Belum Lunas</span>
-                @endif
+        <!-- Right Column: Invoice metadata -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start;">
+            <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+                <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: #475569;">TANGGAL:</label>
+                <div style="font-size: 1rem; color: black !important; font-weight: 500;">{{ \Carbon\Carbon::parse($invoice->date)->format('d M Y') }}</div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+                <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: #475569;">STATUS:</label>
+                <div>
+                    @if($invoice->status == 'Lunas')
+                        <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; display: inline-block;">Lunas</span>
+                    @else
+                        <span style="background: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; display: inline-block;">Belum Lunas</span>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

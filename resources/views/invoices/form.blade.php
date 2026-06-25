@@ -39,10 +39,11 @@
                        Website: www.rayan.web.id</p>
                 </div>
             </div>
-            <div class="invoice-title">
-                <h2>NOTA</h2>
-                <div style="font-size: 1rem; color: var(--text-secondary); margin-top: 0.5rem; font-weight: 500;">
-                    No: <input type="text" name="invoice_number" class="table-input" style="width: 200px; display: inline-block; padding: 0.2rem 0.5rem;" placeholder="INV-20260101-0001" value="{{ old('invoice_number', $invoice->invoice_number ?? $nextNumber ?? '') }}" readonly required>
+            <div class="invoice-title" style="text-align: right;">
+                <h2 style="font-size: 2.5rem; font-weight: 800; letter-spacing: 2px; color: var(--text-primary);">NOTA</h2>
+                <div style="font-size: 1.1rem; margin-top: 0.5rem; font-weight: 700; color: var(--primary-color);">
+                    NO: {{ $invoice->invoice_number ?? $nextNumber ?? '' }}
+                    <input type="hidden" name="invoice_number" value="{{ old('invoice_number', $invoice->invoice_number ?? $nextNumber ?? '') }}">
                 </div>
                 @error('invoice_number')
                     <div style="color: red; font-size: 0.8rem; margin-top: 5px;">{{ $message }}</div>
@@ -50,29 +51,35 @@
             </div>
         </div>
 
-        <div class="customer-info">
-            <div class="info-group">
-                <label>Diberikan Kepada:</label>
-                <input type="text" name="customer_name" class="info-input" placeholder="Nama Pelanggan / Perusahaan" value="{{ old('customer_name', $invoice->customer_name ?? '') }}" required>
-                @error('customer_name') <span style="color: red; font-size: 0.8rem;">{{ $message }}</span> @enderror
+        <div class="customer-info" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+            <!-- Left Column: Customer details -->
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="info-group">
+                    <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: var(--primary-color);">DIBERIKAN KEPADA:</label>
+                    <input type="text" name="customer_name" class="info-input" placeholder="Nama Pelanggan / Perusahaan" value="{{ old('customer_name', $invoice->customer_name ?? '') }}" style="font-weight: 600;" required>
+                    @error('customer_name') <span style="color: red; font-size: 0.8rem;">{{ $message }}</span> @enderror
+                </div>
             </div>
             
-            <div class="info-group">
-                <label>Status Pembayaran:</label>
-                <select name="status" class="info-input">
-                    <option value="Belum Lunas" {{ (old('status', $invoice->status ?? '') == 'Belum Lunas') ? 'selected' : '' }}>Belum Lunas</option>
-                    <option value="Lunas" {{ (old('status', $invoice->status ?? '') == 'Lunas') ? 'selected' : '' }}>Lunas</option>
-                </select>
-            </div>
+            <!-- Right Column: Invoice metadata -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; align-items: start;">
+                <div class="info-group">
+                    <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: var(--primary-color);">TANGGAL:</label>
+                    <input type="date" name="date" class="info-input" value="{{ old('date', $invoice->date ?? date('Y-m-d')) }}" required>
+                </div>
+                
+                <div class="info-group">
+                    <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: var(--primary-color);">STATUS:</label>
+                    <select name="status" class="info-input" style="cursor: pointer; font-weight: 600;">
+                        <option value="Belum Lunas" {{ (old('status', $invoice->status ?? '') == 'Belum Lunas') ? 'selected' : '' }}>Belum Lunas</option>
+                        <option value="Lunas" {{ (old('status', $invoice->status ?? '') == 'Lunas') ? 'selected' : '' }}>Lunas</option>
+                    </select>
+                </div>
 
-            <div class="info-group" style="align-items: flex-end;">
-                <label>Tanggal:</label>
-                <input type="date" name="date" class="info-input" style="width: auto;" value="{{ old('date', $invoice->date ?? date('Y-m-d')) }}" required>
-            </div>
-            
-            <div class="info-group" style="align-items: flex-end;">
-                <label>Pajak / PPN (%):</label>
-                <input type="number" step="0.01" min="0" max="100" id="tax_rate_input" name="tax_rate" class="info-input" style="width: 100px;" value="{{ old('tax_rate', $invoice->tax_rate ?? 11) }}" required>
+                <div class="info-group" style="grid-column: span 2;">
+                    <label style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: var(--primary-color);">PAJAK / PPN (%):</label>
+                    <input type="number" step="0.01" min="0" max="100" id="tax_rate_input" name="tax_rate" class="info-input" value="{{ old('tax_rate', $invoice->tax_rate ?? 11) }}" required>
+                </div>
             </div>
         </div>
 
