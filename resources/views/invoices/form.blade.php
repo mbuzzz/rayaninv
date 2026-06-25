@@ -18,6 +18,7 @@
 <form action="{{ isset($invoice) ? route('invoices.update', $invoice->id) : route('invoices.store') }}" method="POST" id="invoice-form">
     @csrf
     <input type="hidden" id="invoice-token" value="{{ $token }}">
+    <input type="hidden" id="logo-base64" value="{{ $logoBase64 }}">
     @if(isset($invoice))
         @method('PUT')
     @endif
@@ -148,9 +149,12 @@
                     </div>
                 </div>
                 <!-- Signature Block -->
-                <div class="signature-block" style="text-align: center; width: 200px; margin-top: 1.5rem;">
-                    <p style="font-size: 0.8rem; color: black !important; margin-bottom: 2.5rem; font-weight: 500;">Authorized Signature,</p>
-                    <p style="font-size: 0.85rem; font-weight: 700; color: black !important; border-top: 1px dashed #000; padding-top: 0.3rem;">PT Rayan Smart Kreatif</p>
+                <div class="signature-block" style="text-align: center; width: 150px; margin-top: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <p style="font-size: 0.8rem; color: black !important; font-weight: 600; margin: 0;">Digital Signature</p>
+                    <div style="background: white; padding: 4px; border-radius: 6px; border: 1px solid #cbd5e1; display: inline-block;">
+                        <canvas id="signature-qr" style="width: 80px; height: 80px; display: block;"></canvas>
+                    </div>
+                    <p style="font-size: 0.8rem; font-weight: 700; color: black !important; margin: 0; text-transform: uppercase;">PT Rayan Smart Kreatif</p>
                 </div>
             </div>
         </div>

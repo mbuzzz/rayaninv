@@ -130,9 +130,12 @@
                 </div>
             </div>
             <!-- Signature Block -->
-            <div class="signature-block" style="text-align: center; width: 200px; margin-top: 1.5rem;">
-                <p style="font-size: 0.8rem; color: black !important; margin-bottom: 2.5rem; font-weight: 500;">Authorized Signature,</p>
-                <p style="font-size: 0.85rem; font-weight: 700; color: black !important; border-top: 1px dashed #000; padding-top: 0.3rem;">PT Rayan Smart Kreatif</p>
+            <div class="signature-block" style="text-align: center; width: 150px; margin-top: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                <p style="font-size: 0.8rem; color: black !important; font-weight: 600; margin: 0;">Digital Signature</p>
+                <div style="background: white; padding: 4px; border-radius: 6px; border: 1px solid #e2e8f0; display: inline-block;">
+                    <canvas id="signature-qr" style="width: 80px; height: 80px; display: block;"></canvas>
+                </div>
+                <p style="font-size: 0.8rem; font-weight: 700; color: black !important; margin: 0; text-transform: uppercase;">PT Rayan Smart Kreatif</p>
             </div>
         </div>
     </div>
@@ -143,13 +146,41 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Generate QR Code pointing to this page's URL
     const qrCanvas = document.getElementById('invoice-qr');
-    if (qrCanvas) {
+    const sigCanvas = document.getElementById('signature-qr');
+    const logoBase64 = '{{ $logoBase64 }}';
+
+    const drawQRWithLogo = (canvasEl, urlValue) => {
         new QRious({
-            element: qrCanvas,
-            value: window.location.href,
-            size: 180,
+            element: canvasEl,
+            value: urlValue,
+            size: 200,
             level: 'H'
         });
+
+        if (logoBase64) {
+            const ctx = canvasEl.getContext('2d');
+            const img = new Image();
+            img.src = logoBase64;
+            img.onload = function() {
+                const logoSize = canvasEl.width * 0.22;
+                const x = (canvasEl.width - logoSize) / 2;
+                const y = (canvasEl.height - logoSize) / 2;
+
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(canvasEl.width / 2, canvasEl.height / 2, (logoSize / 2) + 2, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.drawImage(img, x, y, logoSize, logoSize);
+            };
+        }
+    };
+
+    if (qrCanvas) {
+        drawQRWithLogo(qrCanvas, window.location.href);
+    }
+    if (sigCanvas) {
+        drawQRWithLogo(sigCanvas, window.location.href);
     }
 
     // Print

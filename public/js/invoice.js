@@ -216,28 +216,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Generate QR Code
     const qrCanvas = document.getElementById('invoice-qr');
-    if (qrCanvas) {
+    const sigCanvas = document.getElementById('signature-qr');
+    const tokenEl = document.getElementById('invoice-token');
+    const logoEl = document.getElementById('logo-base64');
+    const logoBase64 = logoEl ? logoEl.value : '';
+
+    if (qrCanvas || sigCanvas) {
         const invoiceNumberInput = document.querySelector('input[name="invoice_number"]');
-        const tokenEl = document.getElementById('invoice-token');
-        const generateQR = () => {
+        
+        const drawQRWithLogo = (canvasEl, urlValue) => {
+            new QRious({
+                element: canvasEl,
+                value: urlValue,
+                size: 200,
+                level: 'H'
+            });
+
+            if (logoBase64) {
+                const ctx = canvasEl.getContext('2d');
+                const img = new Image();
+                img.src = logoBase64;
+                img.onload = function() {
+                    const logoSize = canvasEl.width * 0.22;
+                    const x = (canvasEl.width - logoSize) / 2;
+                    const y = (canvasEl.height - logoSize) / 2;
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(canvasEl.width / 2, canvasEl.height / 2, (logoSize / 2) + 2, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    ctx.drawImage(img, x, y, logoSize, logoSize);
+                };
+            }
+        };
+
+        const generateQRs = () => {
             const invoiceNumber = invoiceNumberInput ? invoiceNumberInput.value : 'TEMP';
             const token = tokenEl ? tokenEl.value : '';
             const baseUrl = window.location.origin;
             const qrUrl = `${baseUrl}/invoices/show/${invoiceNumber}?token=${token}`;
-            new QRious({
-                element: qrCanvas,
-                value: qrUrl,
-                size: 180,
-                level: 'H'
-            });
+            
+            if (qrCanvas) {
+                drawQRWithLogo(qrCanvas, qrUrl);
+            }
+            if (sigCanvas) {
+                drawQRWithLogo(sigCanvas, qrUrl);
+            }
         };
         
-        generateQR();
+        generateQRs();
         
         // Regenerate if invoice number changes
         if (invoiceNumberInput) {
-            invoiceNumberInput.addEventListener('change', generateQR);
-            invoiceNumberInput.addEventListener('input', generateQR);
+            invoiceNumberInput.addEventListener('change', generateQRs);
+            invoiceNumberInput.addEventListener('input', generateQRs);
         }
     }
 });
