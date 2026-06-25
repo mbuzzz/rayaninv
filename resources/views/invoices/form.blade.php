@@ -15,10 +15,14 @@
     @endif
 
     <div class="glass-container" id="invoice-container">
+        <!-- Watermark Background -->
+        <div class="watermark">
+            <img src="{{ asset('images/logorayan.png') }}" alt="Watermark PT Rayan Smart Kreatif">
+        </div>
         
         <div class="invoice-header">
             <div class="company-info" style="display: flex; align-items: center; gap: 1.5rem;">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo PT Rayan Smart Kreatif" style="width: 80px; height: 80px; object-fit: contain; border-radius: 12px;">
+                <img src="{{ asset('images/logorayan.png') }}" alt="Logo PT Rayan Smart Kreatif" style="width: 90px; height: 90px; object-fit: contain;">
                 <div>
                     <h1>PT Rayan Smart Kreatif</h1>
                     <p>Dusun Jalen 1, Desa Setail, Kec. Genteng<br>
@@ -101,8 +105,19 @@
 
         <button type="button" id="btn-add-item" class="btn-add">+ Tambah Baris Barang/Jasa</button>
 
-        <div class="invoice-summary">
-            <div class="summary-content">
+        <div class="invoice-summary" style="justify-content: space-between; align-items: flex-end; gap: 2rem;">
+            <!-- QR Code Section -->
+            <div id="qr-code-container" style="display: flex; align-items: center; gap: 1rem; text-align: left; padding: 0.5rem; border-radius: 10px; background: rgba(255, 255, 255, 0.15);">
+                <div style="background: white; padding: 6px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: inline-block;">
+                    <canvas id="invoice-qr" style="width: 90px; height: 90px; display: block;"></canvas>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary); max-width: 180px; line-height: 1.4;">
+                    <span style="font-weight: 600; color: var(--text-primary);" class="qr-title">Validasi Online</span><br>
+                    Scan QR ini untuk memverifikasi keaslian nota secara online.
+                </div>
+            </div>
+
+            <div class="summary-content" style="margin-top: 0;">
                 <div class="summary-row">
                     <span>Subtotal</span>
                     <span id="subtotal">Rp 0</span>

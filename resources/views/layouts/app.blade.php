@@ -6,9 +6,10 @@
     <title>Nota Online - PT Rayan Smart Kreatif</title>
     <!-- Glassmorphism CSS -->
     <link rel="stylesheet" href="{{ asset('css/glassmorphism.css') }}">
-    <!-- html2canvas and jsPDF libraries for export -->
+    <!-- html2canvas, jsPDF, and QRious libraries for export & verification -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
 <body>
 

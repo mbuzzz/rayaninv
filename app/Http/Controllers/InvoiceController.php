@@ -119,6 +119,12 @@ class InvoiceController extends Controller
         return redirect()->route('invoices.index')->with('success', 'Nota berhasil diperbarui.');
     }
 
+    public function show(Invoice $invoice)
+    {
+        $invoice->load('items');
+        return view('invoices.show', compact('invoice'));
+    }
+
     public function destroy(Invoice $invoice)
     {
         $invoice->delete();

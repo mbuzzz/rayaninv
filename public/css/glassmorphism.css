@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 :root {
     --glass-bg: rgba(255, 255, 255, 0.25);
@@ -14,7 +14,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 body {
@@ -426,4 +426,37 @@ body.preview-mode .glass-container {
         background: transparent !important;
         color: black !important;
     }
+}
+
+/* QR Code Validation Styling */
+body.export-mode .qr-title,
+body.preview-mode .qr-title,
+body.export-mode #qr-code-container,
+body.preview-mode #qr-code-container {
+    color: black !important;
+}
+body.export-mode #qr-code-container,
+body.preview-mode #qr-code-container {
+    background: transparent !important;
+}
+
+/* Watermark Styling */
+.watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+    width: 320px;
+    height: 320px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.watermark img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }

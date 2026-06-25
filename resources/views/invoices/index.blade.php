@@ -5,7 +5,7 @@
     
     <div class="invoice-header" style="align-items: center;">
         <div class="company-info" style="display: flex; align-items: center; gap: 1.5rem;">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo PT Rayan Smart Kreatif" style="width: 60px; height: 60px; object-fit: contain; border-radius: 12px;">
+            <img src="{{ asset('images/logorayan.png') }}" alt="Logo PT Rayan Smart Kreatif" style="width: 70px; height: 70px; object-fit: contain;">
             <div>
                 <h1>Daftar Nota</h1>
                 <p>PT Rayan Smart Kreatif</p>
@@ -49,6 +49,7 @@
                     </td>
                     <td style="text-align: center;">
                         <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <a href="{{ route('invoices.show', $inv->invoice_number) }}" class="btn btn-jpg" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; display: inline-block; text-decoration: none; background: linear-gradient(135deg, #10b981, #059669); box-shadow: none;">Tampilkan</a>
                             <a href="{{ route('invoices.edit', $inv->id) }}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; display: inline-block; text-decoration: none;">Lihat/Edit</a>
                             
                             <form action="{{ route('invoices.destroy', $inv->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus nota ini?');">

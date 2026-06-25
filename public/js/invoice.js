@@ -170,4 +170,29 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.add('preview-mode');
         });
     }
+
+    // Generate QR Code
+    const qrCanvas = document.getElementById('invoice-qr');
+    if (qrCanvas) {
+        const invoiceNumberInput = document.querySelector('input[name="invoice_number"]');
+        const generateQR = () => {
+            const invoiceNumber = invoiceNumberInput ? invoiceNumberInput.value : 'TEMP';
+            const baseUrl = window.location.origin;
+            const qrUrl = `${baseUrl}/invoices/show/${invoiceNumber}`;
+            new QRious({
+                element: qrCanvas,
+                value: qrUrl,
+                size: 180,
+                level: 'H'
+            });
+        };
+        
+        generateQR();
+        
+        // Regenerate if invoice number changes
+        if (invoiceNumberInput) {
+            invoiceNumberInput.addEventListener('change', generateQR);
+            invoiceNumberInput.addEventListener('input', generateQR);
+        }
+    }
 });
