@@ -1,6 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $logoPath = public_path('images/logorayan.png');
+    $logoBase64 = '';
+    if (file_exists($logoPath)) {
+        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+    }
+@endphp
 <div class="preview-actions">
     <button type="button" id="btn-close-preview" class="btn btn-secondary" style="margin: 0;">Kembali Edit</button>
     <button type="button" id="btn-print" class="btn btn-secondary" style="margin: 0;">Cetak (Print)</button>
@@ -10,6 +17,7 @@
 
 <form action="{{ isset($invoice) ? route('invoices.update', $invoice->id) : route('invoices.store') }}" method="POST" id="invoice-form">
     @csrf
+    <input type="hidden" id="invoice-token" value="{{ $token }}">
     @if(isset($invoice))
         @method('PUT')
     @endif
@@ -17,12 +25,12 @@
     <div class="glass-container" id="invoice-container">
         <!-- Watermark Background -->
         <div class="watermark">
-            <img src="{{ asset('images/logorayan.png') }}" alt="Watermark PT Rayan Smart Kreatif">
+            <img src="{{ $logoBase64 }}" alt="Watermark PT Rayan Smart Kreatif">
         </div>
         
         <div class="invoice-header">
             <div class="company-info" style="display: flex; align-items: center; gap: 1.5rem;">
-                <img src="{{ asset('images/logorayan.png') }}" alt="Logo PT Rayan Smart Kreatif" style="width: 90px; height: 90px; object-fit: contain;">
+                <img src="{{ $logoBase64 }}" alt="Logo PT Rayan Smart Kreatif" style="width: 90px; height: 90px; object-fit: contain;">
                 <div>
                     <h1>PT Rayan Smart Kreatif</h1>
                     <p>Dusun Jalen 1, Desa Setail, Kec. Genteng<br>

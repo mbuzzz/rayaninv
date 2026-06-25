@@ -19,8 +19,9 @@ class InvoiceController extends Controller
         $today = \Carbon\Carbon::now()->format('Ymd');
         $countToday = \App\Models\Invoice::whereDate('created_at', \Carbon\Carbon::today())->count();
         $nextNumber = 'INV-' . $today . '-' . str_pad($countToday + 1, 4, '0', STR_PAD_LEFT);
+        $token = substr(hash_hmac('sha256', $nextNumber, config('app.key')), 0, 16);
         
-        return view('invoices.form', compact('nextNumber'));
+        return view('invoices.form', compact('nextNumber', 'token'));
     }
 
     public function store(Request $request)
@@ -70,7 +71,8 @@ class InvoiceController extends Controller
     public function edit(Invoice $invoice)
     {
         $invoice->load('items');
-        return view('invoices.form', compact('invoice'));
+        $token = substr(hash_hmac('sha256', $invoice->invoice_number, config('app.key')), 0, 16);
+        return view('invoices.form', compact('invoice', 'token'));
     }
 
     public function update(Request $request, Invoice $invoice)
@@ -119,8 +121,12 @@ class InvoiceController extends Controller
         return redirect()->route('invoices.index')->with('success', 'Nota berhasil diperbarui.');
     }
 
-    public function show(Invoice $invoice)
+    public function show(Request $request, Invoice $invoice)
     {
+        $expectedToken = substr(hash_hmac('sha256', $invoice->invoice_number, config('app.key')), 0, 16);
+        if ($request->query('token') !== $expectedToken) {
+            abort(403, 'Tautan verifikasi tidak sah atau telah kedaluwarsa.');
+        }
         $invoice->load('items');
         return view('invoices.show', compact('invoice'));
     }

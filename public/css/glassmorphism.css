@@ -420,12 +420,47 @@ body.preview-mode .glass-container {
         margin: 0 !important;
         padding: 0 !important;
     }
-    .btn-add, .col-action, .actions, .preview-actions { display: none !important; }
+    .btn-add, .col-action, .actions, .preview-actions, body.preview-mode .preview-actions { display: none !important; }
     .table-input, .info-input {
         border: none !important;
         background: transparent !important;
         color: black !important;
     }
+    /* Clean up native inputs for printing */
+    select.info-input {
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        background: transparent !important;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none !important;
+        -webkit-appearance: none !important;
+    }
+}
+
+/* Form input element cleanup in preview and export modes */
+body.preview-mode select.info-input,
+body.export-mode select.info-input {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background: transparent !important;
+}
+
+body.preview-mode input[type="date"]::-webkit-calendar-picker-indicator,
+body.export-mode input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none !important;
+    -webkit-appearance: none !important;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
 }
 
 /* QR Code Validation Styling */

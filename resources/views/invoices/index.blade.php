@@ -49,7 +49,7 @@
                     </td>
                     <td style="text-align: center;">
                         <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                            <a href="{{ route('invoices.show', $inv->invoice_number) }}" class="btn btn-jpg" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; display: inline-block; text-decoration: none; background: linear-gradient(135deg, #10b981, #059669); box-shadow: none;">Tampilkan</a>
+                            <a href="{{ route('invoices.show', $inv->invoice_number) }}?token={{ substr(hash_hmac('sha256', $inv->invoice_number, config('app.key')), 0, 16) }}" class="btn btn-jpg" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; display: inline-block; text-decoration: none; background: linear-gradient(135deg, #10b981, #059669); box-shadow: none;">Tampilkan</a>
                             <a href="{{ route('invoices.edit', $inv->id) }}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; display: inline-block; text-decoration: none;">Lihat/Edit</a>
                             
                             <form action="{{ route('invoices.destroy', $inv->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus nota ini?');">

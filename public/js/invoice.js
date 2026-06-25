@@ -175,10 +175,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const qrCanvas = document.getElementById('invoice-qr');
     if (qrCanvas) {
         const invoiceNumberInput = document.querySelector('input[name="invoice_number"]');
+        const tokenEl = document.getElementById('invoice-token');
         const generateQR = () => {
             const invoiceNumber = invoiceNumberInput ? invoiceNumberInput.value : 'TEMP';
+            const token = tokenEl ? tokenEl.value : '';
             const baseUrl = window.location.origin;
-            const qrUrl = `${baseUrl}/invoices/show/${invoiceNumber}`;
+            const qrUrl = `${baseUrl}/invoices/show/${invoiceNumber}?token=${token}`;
             new QRious({
                 element: qrCanvas,
                 value: qrUrl,

@@ -1,22 +1,30 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="preview-actions" style="display: flex !important;">
+@php
+    $logoPath = public_path('images/logorayan.png');
+    $logoBase64 = '';
+    if (file_exists($logoPath)) {
+        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+    }
+@endphp
+<div class="preview-actions" style="display: flex;">
     <a href="{{ route('invoices.index') }}" class="btn btn-secondary" style="margin: 0; text-decoration: none;">Daftar Nota</a>
     <button type="button" id="btn-print" class="btn btn-secondary" style="margin: 0;">Cetak (Print)</button>
     <button type="button" id="btn-export-pdf" class="btn btn-pdf" style="margin: 0;">Unduh PDF</button>
     <button type="button" id="btn-export-jpg" class="btn btn-jpg" style="margin: 0;">Unduh JPG</button>
+    <a href="https://api.whatsapp.com/send?text=Halo,%20berikut%20adalah%20link%20nota%20resmi%20dari%20PT%20Rayan%20Smart%20Kreatif%20dengan%20nomor%20{{ $invoice->invoice_number }}:%20{{ urlencode(request()->fullUrl()) }}" target="_blank" class="btn" style="margin: 0; background: linear-gradient(135deg, #25D366, #128C7E); color: white; text-decoration: none; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">Bagikan ke WA</a>
 </div>
 
 <div class="glass-container" id="invoice-container" style="margin-top: 60px; background: white !important; box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;">
     <!-- Watermark Background -->
     <div class="watermark">
-        <img src="{{ asset('images/logorayan.png') }}" alt="Watermark PT Rayan Smart Kreatif">
+        <img src="{{ $logoBase64 }}" alt="Watermark PT Rayan Smart Kreatif">
     </div>
     
     <div class="invoice-header">
         <div class="company-info" style="display: flex; align-items: center; gap: 1.5rem;">
-            <img src="{{ asset('images/logorayan.png') }}" alt="Logo PT Rayan Smart Kreatif" style="width: 90px; height: 90px; object-fit: contain;">
+            <img src="{{ $logoBase64 }}" alt="Logo PT Rayan Smart Kreatif" style="width: 90px; height: 90px; object-fit: contain;">
             <div>
                 <h1 style="color: black !important;">PT Rayan Smart Kreatif</h1>
                 <p style="color: black !important;">Dusun Jalen 1, Desa Setail, Kec. Genteng<br>
@@ -79,14 +87,27 @@
 
     <div class="invoice-summary" style="justify-content: space-between; align-items: flex-end; gap: 2rem; border-top: 2px solid #e2e8f0 !important;">
         <!-- QR Code Section -->
-        <div id="qr-code-container" style="display: flex; align-items: center; gap: 1rem; text-align: left; padding: 0.5rem; border-radius: 10px;">
-            <div style="background: white; padding: 6px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: inline-block;">
-                <canvas id="invoice-qr" style="width: 90px; height: 90px; display: block;"></canvas>
+        <div id="qr-code-container" style="display: flex; flex-direction: column; gap: 1rem; text-align: left; padding: 0.5rem; border-radius: 10px;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="background: white; padding: 6px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: inline-block;">
+                    <canvas id="invoice-qr" style="width: 90px; height: 90px; display: block;"></canvas>
+                </div>
+                <div style="font-size: 0.8rem; color: black !important; max-width: 180px; line-height: 1.4;">
+                    <span style="font-weight: 600;" class="qr-title">Validasi Online</span><br>
+                    Scan QR ini untuk memverifikasi keaslian nota secara online.
+                </div>
             </div>
-            <div style="font-size: 0.8rem; color: black !important; max-width: 180px; line-height: 1.4;">
-                <span style="font-weight: 600;" class="qr-title">Validasi Online</span><br>
-                Scan QR ini untuk memverifikasi keaslian nota secara online.
+
+            <!-- Payment Info (shown if payment is pending) -->
+            @if($invoice->status !== 'Lunas')
+            <div style="margin-top: 0.5rem; padding: 0.75rem 1rem; border-radius: 8px; background: #fffbeb; border: 1px solid #fef3c7; color: #92400e; font-size: 0.8rem; line-height: 1.5; max-width: 320px;">
+                <strong>Informasi Pembayaran:</strong><br>
+                Transfer ke rekening resmi perusahaan:<br>
+                <strong>Bank Mandiri:</strong> 1430028062501<br>
+                <strong>A.N.:</strong> PT Rayan Smart Kreatif<br>
+                <em>Konfirmasikan bukti transfer ke admin via WA.</em>
             </div>
+            @endif
         </div>
 
         <div class="summary-content" style="margin-top: 0;">
