@@ -58,6 +58,7 @@
                 <th>Client Name</th>
                 <th>Total</th>
                 <th>Status</th>
+                <th>Created By</th>
                 <th style="text-align: center;">Actions</th>
             </tr>
         </thead>
@@ -75,22 +76,24 @@
                             <span style="background: rgba(239, 68, 68, 0.15); color: #f87171; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700;">Unpaid</span>
                         @endif
                     </td>
+                    <td style="color: var(--text-secondary); font-size: 0.85rem;">{{ $inv->creator?->username ?? '-' }}</td>
                     <td style="text-align: center;">
                         <div style="display: flex; gap: 0.5rem; justify-content: center;">
                             <a href="{{ route('invoices.show', $inv->invoice_number) }}?token={{ substr(hash_hmac('sha256', $inv->invoice_number, config('app.key')), 0, 16) }}" class="btn btn-jpg" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; display: inline-block; text-decoration: none; background: linear-gradient(135deg, #10b981, #059669); box-shadow: none;">Show</a>
                             <a href="{{ route('invoices.edit', $inv->id) }}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; display: inline-block; text-decoration: none;">Edit</a>
-                            
+                            @if(auth()->user()->isAdmin())
                             <form action="{{ route('invoices.destroy', $inv->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus nota ini?');" style="margin:0;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-pdf" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border: none; cursor: pointer; box-shadow: none;">Delete</button>
                             </form>
+                            @endif
                         </div>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No invoices found.</td>
+                    <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No invoices found.</td>
                 </tr>
             @endforelse
         </tbody>

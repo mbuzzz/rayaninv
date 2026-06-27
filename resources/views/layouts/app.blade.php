@@ -31,9 +31,13 @@
             <a href="{{ route('invoices.index') }}" style="color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-primary)'">History</a>
             <a href="{{ route('invoices.create') }}" style="color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-primary)'">+ New Invoice</a>
             <a href="{{ route('invoices.export') }}" style="color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-primary)'">Export Excel</a>
+            @if(auth()->user()->isAdmin())
+            <a href="{{ route('users.index') }}" style="color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-primary)'">Users</a>
+            <a href="{{ route('roles.index') }}" style="color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-primary)'">Roles</a>
+            @endif
         </div>
         <div style="display: flex; align-items: center; gap: 1rem;">
-            <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">Admin</span>
+            <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">{{ auth()->user()->name }}</span>
             <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                 @csrf
                 <button type="submit" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin: 0; display: inline-block; box-shadow: none;">Logout</button>

@@ -15,7 +15,7 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        $invoices = Invoice::orderBy('created_at', 'desc')->get();
+        $invoices = Invoice::with('creator')->orderBy('created_at', 'desc')->get();
         
         // Compute statistics
         $totalInvoices = $invoices->count();
@@ -72,7 +72,8 @@ class InvoiceController extends Controller
             'Tax Rate', 
             'Tax Amount (IDR)', 
             'Total Amount (IDR)', 
-            'Status'
+            'Status',
+            'Created By',
         ];
         
         foreach ($headers as $colIndex => $header) {
@@ -81,7 +82,7 @@ class InvoiceController extends Controller
             $sheet->getColumnDimension($colLetter)->setAutoSize(true);
         }
         
-        $sheet->getStyle('A1:H1')->applyFromArray($headerStyle);
+        $sheet->getStyle('A1:I1')->applyFromArray($headerStyle);
         $sheet->getRowDimension(1)->setRowHeight(25);
         
         // Populate Data
@@ -95,6 +96,7 @@ class InvoiceController extends Controller
             $sheet->setCellValue('F' . $rowNum, $inv->tax);
             $sheet->setCellValue('G' . $rowNum, $inv->total);
             $sheet->setCellValue('H' . $rowNum, $inv->status);
+            $sheet->setCellValue('I' . $rowNum, $inv->creator?->username ?? '-');
             
             // Format cells
             $sheet->getStyle('B' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -103,6 +105,7 @@ class InvoiceController extends Controller
             $sheet->getStyle('F' . $rowNum)->getNumberFormat()->setFormatCode('Rp#,##0');
             $sheet->getStyle('G' . $rowNum)->getNumberFormat()->setFormatCode('Rp#,##0');
             $sheet->getStyle('H' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('I' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             
             // Highlight status
             $statusStyle = [
@@ -118,7 +121,7 @@ class InvoiceController extends Controller
             $sheet->getStyle('H' . $rowNum)->applyFromArray($statusStyle);
             
             // Thin borders for data rows
-            $sheet->getStyle('A' . $rowNum . ':H' . $rowNum)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('E2E8F0'));
+            $sheet->getStyle('A' . $rowNum . ':I' . $rowNum)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('E2E8F0'));
             
             $rowNum++;
         }
@@ -174,6 +177,7 @@ class InvoiceController extends Controller
             'subtotal' => $subtotal,
             'tax' => $tax,
             'total' => $total,
+            'user_id' => auth()->id(),
         ]);
 
         foreach ($validated['items'] as $item) {
@@ -253,6 +257,9 @@ class InvoiceController extends Controller
 
     public function destroy(Invoice $invoice)
     {
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Only administrators can delete invoices.');
+        }
         $invoice->delete();
         return redirect()->route('invoices.index')->with('success', 'Nota berhasil dihapus.');
     }
