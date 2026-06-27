@@ -14,14 +14,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RoleSeeder::class);
-
-        $superadmin = Role::where('name', 'superadmin')->first();
-
-        User::factory()->create([
-            'name' => 'Admin Rayan',
-            'username' => 'admin',
-            'email' => 'admin@rayan.web.id',
-            'role_id' => $superadmin?->id,
-        ]);
+        $this->call(AdminSeeder::class);
     }
 }
+
